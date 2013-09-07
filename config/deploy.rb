@@ -32,7 +32,7 @@ namespace :deploy do
 
     username = user || ENV['USER']
     servers.each do |server|
-      `rsync -avz -e ssh "./" "#{username}@#{server}:#{release_path}" --exclude "_darcs" --exclude ".svn" --exclude "log"`
+      `rsync -avz -e ssh "./" "#{username}@#{server}:#{release_path}" --exclude "_darcs" --exclude ".git" --exclude "log"`
     end
 
     # run <<-CMD
@@ -49,7 +49,7 @@ namespace :deploy do
   task :stop do ; end
   task :restart, :roles => :app, :except => { :no_release => true } do
     run "touch #{File.join(current_path,'tmp','restart.txt')}"
-    # run "killall nginx"
+    run "pkill nginx"
     run "/opt/nginx/sbin/nginx"
   end
 end

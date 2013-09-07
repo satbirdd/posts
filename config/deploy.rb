@@ -32,23 +32,24 @@ namespace :deploy do
 
     username = user || ENV['USER']
     servers.each do |server|
-      `rsync -avz -e ssh "./" "#{username}@#{server}:#{release_path}" 
-        --exclude "_darcs" --exclude ".svn" --exclude "log"`
+      `rsync -avz -e ssh "./" "#{username}@#{server}:#{release_path}" --exclude "_darcs" --exclude ".svn" --exclude "log"`
     end
 
-    run <<-CMD
-      rm -rf #{release_path}/log &&
-      rm -rf #{release_path}/public/system &&
-      rm -rf #{release_path}/public/files &&
-      ln -nfs #{shared_path}/log #{release_path}/log &&
-      ln -nfs #{shared_path}/files #{release_path}/public/files &&
-      ln -nfs #{shared_path}/system #{release_path}/public/system
-    CMD
+    # run <<-CMD
+    #   rm -rf #{release_path}/log &&
+    #   rm -rf #{release_path}/public/system &&
+    #   rm -rf #{release_path}/public/files &&
+    #   ln -nfs #{shared_path}/log #{release_path}/log &&
+    #   ln -nfs #{shared_path}/files #{release_path}/public/files &&
+    #   ln -nfs #{shared_path}/system #{release_path}/public/system
+    # CMD
   end
 
   task :start do ; end
   task :stop do ; end
   task :restart, :roles => :app, :except => { :no_release => true } do
-    run "#{try_sudo} touch #{File.join(current_path,'tmp','restart.txt')}"
+    run "touch #{File.join(current_path,'tmp','restart.txt')}"
+    # run "killall nginx"
+    run "/opt/nginx/sbin/nginx"
   end
 end
